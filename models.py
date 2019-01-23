@@ -1,5 +1,8 @@
-from app import db
+from flask_migrate import Migrate
+from app import app, db
 
+
+migrate = Migrate(app, db)
 
 class Room(db.Model):
     __tablename__ = 'ROOMS'
