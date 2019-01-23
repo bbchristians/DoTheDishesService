@@ -1,11 +1,11 @@
-import app
+from server import db
 
 
-class Room(app.db.Model):
+class Room(db.Model):
     __tablename__ = 'ROOMS'
     # define your model
-    roomId = app.db.Column(app.db.Integer, primary_key=True)
-    roomName = app.db.Column(app.db.String)
+    roomId = db.Column(db.Integer, primary_key=True)
+    roomName = db.Column(db.String)
 
     def json(self):
         return {
@@ -14,16 +14,16 @@ class Room(app.db.Model):
         }
 
 
-class Assignment(app.db.Model):
+class Assignment(db.Model):
     __tablename__ = "ASSIGNMENTS"
 
-    assignmentId = app.db.Column(app.db.Integer, primary_key=True)
-    assignedUser = app.db.Column(app.db.String)
-    createdUser = app.db.Column(app.db.String)
-    assignmentName = app.db.Column(app.db.String)
-    date = app.db.Column(app.db.Date)
-    completed = app.db.Column(app.db.Boolean)
-    roomId = app.db.Column(app.db.Integer)
+    assignmentId = db.Column(db.Integer, primary_key=True)
+    assignedUser = db.Column(db.String)
+    createdUser = db.Column(db.String)
+    assignmentName = db.Column(db.String)
+    date = db.Column(db.Date)
+    completed = db.Column(db.Boolean)
+    roomId = db.Column(db.Integer)
 
     def json(self):
         return {
@@ -37,12 +37,12 @@ class Assignment(app.db.Model):
         }
 
 
-class UserRegistration(app.db.Model):
+class UserRegistration(db.Model):
     __tablename__ = "USER_REGISTRATIONS"
 
-    entryId = app.db.Column(app.db.Integer, primary_key=True)
-    userId = app.db.Column(app.db.String)
-    roomId = app.db.Column(app.db.Integer)
+    entryId = db.Column(db.Integer, primary_key=True)
+    userId = db.Column(db.String)
+    roomId = db.Column(db.Integer)
 
     def json(self):
         return {
