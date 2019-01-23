@@ -4,8 +4,9 @@ from app import app, db
 
 migrate = Migrate(app, db)
 
+
 class Room(db.Model):
-    __tablename__ = 'ROOMS'
+    __tablename__ = 'rooms'
     # define your model
     roomId = db.Column(db.Integer, primary_key=True)
     roomName = db.Column(db.String)
@@ -18,7 +19,7 @@ class Room(db.Model):
 
 
 class Assignment(db.Model):
-    __tablename__ = "ASSIGNMENTS"
+    __tablename__ = "assignments"
 
     assignmentId = db.Column(db.Integer, primary_key=True)
     assignedUser = db.Column(db.String)
@@ -41,7 +42,7 @@ class Assignment(db.Model):
 
 
 class UserRegistration(db.Model):
-    __tablename__ = "USER_REGISTRATIONS"
+    __tablename__ = "user_registrations"
 
     entryId = db.Column(db.Integer, primary_key=True)
     userId = db.Column(db.String)
