@@ -1,30 +1,4 @@
-import datetime
-
 from app import db
-
-#
-# class BaseModel(db.Model):
-#     """Base data model for all objects"""
-#     __abstract__ = True
-#
-#     def __init__(self, *args):
-#         super().__init__(*args)
-#
-#     def __repr__(self):
-#         """Define a base way to print models"""
-#         return '%s(%s)' % (self.__class__.__name__, {
-#             column: value
-#             for column, value in self._to_dict().items()
-#         })
-#
-#     def json(self):
-#         """
-#                 Define a base way to jsonify models, dealing with datetime objects
-#         """
-#         return {
-#             column: value if not isinstance(value, datetime.date) else value.strftime('%Y-%m-%d')
-#             for column, value in self._to_dict().items()
-#         }
 
 
 class Room(db.Model):
@@ -33,22 +7,45 @@ class Room(db.Model):
     roomId = db.Column(db.Integer, primary_key=True)
     roomName = db.Column(db.String)
 
+    def json(self):
+        return {
+            'roomId': self.roomId,
+            'roomName': self.roomName
+        }
+
 
 class Assignment(db.Model):
     __tablename__ = "ASSIGNMENTS"
 
     assignmentId = db.Column(db.Integer, primary_key=True)
     assignedUser = db.Column(db.String)
-    createdUser = db.Column(db.Integer)
+    createdUser = db.Column(db.String)
     assignmentName = db.Column(db.String)
     date = db.Column(db.Date)
     completed = db.Column(db.Boolean)
     roomId = db.Column(db.Integer)
 
+    def json(self):
+        return {
+            "assignmentId": self.assignmentId,
+            "assignedUser": self.assignedUser,
+            "createdUser": self.createdUser,
+            "assignmentName": self.assignmentName,
+            "date": self.date,
+            "completed": self.completed,
+            "roomId": self.roomId
+        }
+
 
 class UserRegistration(db.Model):
-    __tablename__ = "REGISTERED_USERS"
+    __tablename__ = "USER_REGISTRATIONS"
 
     entryId = db.Column(db.Integer, primary_key=True)
-    userId = db.Column(db.Integer)
+    userId = db.Column(db.String)
     roomId = db.Column(db.Integer)
+
+    def json(self):
+        return {
+            "userId": self.userId,
+            "roomId": self.roomId
+        }
