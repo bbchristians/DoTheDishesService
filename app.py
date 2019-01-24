@@ -47,10 +47,16 @@ def get_room():
     roomJson = roomQuery[0].json()
 
     assignmentsQuery = models.Assignment.query.filter_by(roomid=roomId).all()
-    roomJson["assignments"] = list(map(models.Assignment.json, assignmentsQuery))
+    if assignmentsQuery:
+        roomJson["assignments"] = list(map(models.Assignment.json, assignmentsQuery))
+    else:
+        roomJson["assignments"] = []
 
     registeredUsersQuery = models.UserRegistration.query.filter_by(roomid=roomId).all()
-    roomJson["registeredUsers"] = list(map(models.UserRegistration.json, registeredUsersQuery))
+    if registeredUsersQuery:
+        roomJson["registeredUsers"] = list(map(models.UserRegistration.json, registeredUsersQuery))
+    else:
+        roomJson["registeredUsers"] = []
 
     return jsonify(roomJson)
 
