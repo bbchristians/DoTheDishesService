@@ -5,7 +5,7 @@ app = Flask(__name__)
 db = SQLAlchemy()
 
 import models
-#
+
 # POSTGRES = {
 #     'user': 'postgres',
 #     'pw': 'postgres',
