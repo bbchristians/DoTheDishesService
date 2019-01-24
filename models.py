@@ -8,48 +8,48 @@ migrate = Migrate(app, db)
 class Room(db.Model):
     __tablename__ = 'rooms'
     # define your model
-    roomId = db.Column(db.Integer, primary_key=True)
-    roomName = db.Column(db.String)
+    roomid = db.Column(db.Integer, primary_key=True)
+    roomname = db.Column(db.String)
 
     def json(self):
         return {
-            'roomId': self.roomId,
-            'roomName': self.roomName
+            'roomId': self.roomid,
+            'roomName': self.roomname
         }
 
 
 class Assignment(db.Model):
     __tablename__ = "assignments"
 
-    assignmentId = db.Column(db.Integer, primary_key=True)
-    assignedUser = db.Column(db.String)
-    createdUser = db.Column(db.String)
-    assignmentName = db.Column(db.String)
+    assignmentid = db.Column(db.Integer, primary_key=True)
+    assigneduser = db.Column(db.String)
+    createduser = db.Column(db.String)
+    assignmentname = db.Column(db.String)
     date = db.Column(db.Date)
     completed = db.Column(db.Boolean)
-    roomId = db.Column(db.Integer)
+    roomid = db.Column(db.Integer)
 
     def json(self):
         return {
-            "assignmentId": self.assignmentId,
-            "assignedUser": self.assignedUser,
-            "createdUser": self.createdUser,
-            "assignmentName": self.assignmentName,
+            "assignmentId": self.assignmentid,
+            "assignedUser": self.assigneduser,
+            "createdUser": self.createduser,
+            "assignmentName": self.assignmentname,
             "date": self.date,
             "completed": self.completed,
-            "roomId": self.roomId
+            "roomId": self.roomid
         }
 
 
 class UserRegistration(db.Model):
     __tablename__ = "user_registrations"
 
-    entryId = db.Column(db.Integer, primary_key=True)
-    userId = db.Column(db.String)
-    roomId = db.Column(db.Integer)
+    entryid = db.Column(db.Integer, primary_key=True)
+    userid = db.Column(db.String)
+    roomid = db.Column(db.Integer)
 
     def json(self):
         return {
-            "userId": self.userId,
-            "roomId": self.roomId
+            "userId": self.userid,
+            "roomId": self.roomid
         }

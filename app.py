@@ -30,7 +30,7 @@ def create_room():
     if not request.is_json:
         return "Expected JSON"
 
-    newRoom = models.Room(roomName=request.json["roomName"])
+    newRoom = models.Room(roomname=request.json["roomName"])
     session.add(newRoom)
     session.commit()
     return "Created new room"
@@ -43,13 +43,13 @@ def get_room():
 
     roomId = request.json["roomId"]
 
-    roomQuery = models.Room.query.filter_by(roomId=roomId)
+    roomQuery = models.Room.query.filter_by(roomid=roomId)
     roomJson = roomQuery[0].json()
 
-    assignmentsQuery = models.Assignment.query.filter_by(roomId=roomId).all()
+    assignmentsQuery = models.Assignment.query.filter_by(roomid=roomId).all()
     roomJson["assignments"] = list(map(models.Assignment.json, assignmentsQuery))
 
-    registeredUsersQuery = models.UserRegistration.query.filter_by(roomId=roomId).all()
+    registeredUsersQuery = models.UserRegistration.query.filter_by(roomid=roomId).all()
     roomJson["registeredUsers"] = list(map(models.UserRegistration.json, registeredUsersQuery))
 
     return jsonify(roomJson)
@@ -66,10 +66,10 @@ def create_assignments():
 
     for assignment in assignments:
         newAssignment = models.Assignment(
-            roomId=roomId,
-            createdUser=createdUser,
-            assignedUser=assignment["assignedUser"],
-            assignmentName=assignment["name"],
+            roomid=roomId,
+            createduser=createdUser,
+            assigneduser=assignment["assignedUser"],
+            assignmentname=assignment["name"],
             date=assignment["date"],
             completed=False
         )
@@ -86,7 +86,7 @@ def delete_assignment():
 
     assignmentId = request.json["assignmentId"]
 
-    assignment = models.Assignment.query.filter_by(assignmentId=assignmentId).first()
+    assignment = models.Assignment.query.filter_by(assignmentid=assignmentId).first()
 
     o_session = session.object_session(assignment)
     o_session.delete(assignment)
@@ -105,7 +105,7 @@ def register_user():
     userId = request.json["userId"]
     roomId = request.json["roomId"]
 
-    session.add(models.UserRegistration(userId=userId, roomId=roomId))
+    session.add(models.UserRegistration(userid=userId, roomid=roomId))
     session.commit()
 
     return "User registered"
