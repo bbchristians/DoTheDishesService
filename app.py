@@ -44,6 +44,8 @@ def get_room():
     roomId = request.json["roomId"]
 
     roomQuery = models.Room.query.filter_by(roomid=roomId)
+    if len(roomQuery) < 1:
+        return "No room found with id " + roomId
     roomJson = roomQuery[0].json()
 
     assignmentsQuery = models.Assignment.query.filter_by(roomid=roomId).all()
