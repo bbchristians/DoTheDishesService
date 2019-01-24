@@ -44,7 +44,7 @@ def get_room():
     roomId = request.json["roomId"]
 
     roomQuery = models.Room.query.filter_by(roomid=roomId).first()
-    if roomQuery is not None:
+    if roomQuery is None:
         return "No room found with id " + roomId
     roomJson = roomQuery.json()
 
