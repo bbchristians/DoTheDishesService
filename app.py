@@ -9,18 +9,18 @@ db = SQLAlchemy()
 
 import models
 
-POSTGRES = {
-    'user': 'postgres',
-    'pw': 'postgres',
-    'db': 'dishes',
-    'host': 'localhost',
-    'port': '5432',
-}
+# POSTGRES = {
+#     'user': 'postgres',
+#     'pw': 'postgres',
+#     'db': 'dishes',
+#     'host': 'localhost',
+#     'port': '5432',
+# }
+# 
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\
+# %(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\
-%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://apbsrnockrqxma:41d5ed02a77b3d37a89ec4e49db803ee8460adb13bc33ec2fbb3547d47570452@ec2-107-22-238-186.compute-1.amazonaws.com:5432/di0b2e80kth2v'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://apbsrnockrqxma:41d5ed02a77b3d37a89ec4e49db803ee8460adb13bc33ec2fbb3547d47570452@ec2-107-22-238-186.compute-1.amazonaws.com:5432/di0b2e80kth2v'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
