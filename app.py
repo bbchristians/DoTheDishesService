@@ -1,23 +1,25 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+import error
+import success
 
 app = Flask(__name__)
 db = SQLAlchemy()
 
 import models
 
-# POSTGRES = {
-#     'user': 'postgres',
-#     'pw': 'postgres',
-#     'db': 'postgres',
-#     'host': 'localhost',
-#     'port': '5432',
-# }
-#
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\
-# %(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+POSTGRES = {
+    'user': 'postgres',
+    'pw': 'postgres',
+    'db': 'dishes',
+    'host': 'localhost',
+    'port': '5432',
+}
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://apbsrnockrqxma:41d5ed02a77b3d37a89ec4e49db803ee8460adb13bc33ec2fbb3547d47570452@ec2-107-22-238-186.compute-1.amazonaws.com:5432/di0b2e80kth2v'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\
+%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://apbsrnockrqxma:41d5ed02a77b3d37a89ec4e49db803ee8460adb13bc33ec2fbb3547d47570452@ec2-107-22-238-186.compute-1.amazonaws.com:5432/di0b2e80kth2v'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -30,10 +32,19 @@ def create_room():
     if not request.is_json:
         return "Expected JSON"
 
-    newRoom = models.Room(roomname=request.json["roomName"])
-    session.add(newRoom)
-    session.commit()
-    return "Created new room"
+    try:
+        newRoom = models.Room(roomname=request.json["roomName"])
+        session.add(newRoom)
+        session.commit()
+    except KeyError:
+        return error.error_400("Missing field in body: 'roomName'")
+
+    if newRoom.roomid is None:
+        return error.error_400("Error adding room to database")
+    
+    return success.success_200({
+        "roomId": newRoom.roomid
+    })
 
 
 @app.route('/get_room', methods=['GET'])
