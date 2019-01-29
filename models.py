@@ -40,6 +40,9 @@ class Assignment(db.Model):
             "roomId": self.roomid
         }
 
+    def get_id(self):
+        return self.assignmentid
+
 
 class UserRegistration(db.Model):
     __tablename__ = "user_registrations"

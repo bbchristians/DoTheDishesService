@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import error
 import success
+import json
 
 app = Flask(__name__)
 db = SQLAlchemy()
@@ -30,7 +31,7 @@ session = db.session
 @app.route('/create_room', methods=['POST'])
 def create_room():
     if not request.is_json:
-        return "Expected JSON"
+        return error.error_400("Expected JSON")
 
     try:
         newRoom = models.Room(roomname=request.json["roomName"])
@@ -41,7 +42,7 @@ def create_room():
 
     if newRoom.roomid is None:
         return error.error_400("Error adding room to database")
-    
+
     return success.success_200({
         "roomId": newRoom.roomid
     })
@@ -50,13 +51,17 @@ def create_room():
 @app.route('/get_room', methods=['GET'])
 def get_room():
     if not request.is_json:
-        return "Expected JSON"
+        return error.error_400("Expected JSON")
 
-    roomId = request.json["roomId"]
+    try:
+        roomId = request.json["roomId"]
+    except KeyError:
+        return error.error_400("Missing field in body: 'roomId'")
 
     roomQuery = models.Room.query.filter_by(roomid=roomId).first()
     if roomQuery is None:
-        return "No room found with id " + str(roomId)
+        return error.error_400("No room found with id " + str(roomId))
+
     roomJson = roomQuery.json()
 
     assignmentsQuery = models.Assignment.query.filter_by(roomid=roomId).all()
@@ -71,18 +76,30 @@ def get_room():
     else:
         roomJson["registeredUsers"] = []
 
-    return jsonify(roomJson)
+    return success.success_200(roomJson)
 
 
 @app.route('/create_assignment', methods=['POST'])
 def create_assignments():
     if not request.is_json:
-        return "Expected JSON"
+        return error.error_400("Expected JSON")
 
-    roomId = request.json["roomId"]
-    createdUser = request.json["createdUser"]
-    assignments = request.json["assignments"]
+    try:
+        roomId = request.json["roomId"]
+    except KeyError:
+        return error.error_400("Missing field in body: 'roomId'")
 
+    try:
+        createdUser = request.json["createdUser"]
+    except KeyError:
+        return error.error_400("Missing field in body: 'createdUser'")
+
+    try:
+        assignments = request.json["assignments"]
+    except KeyError:
+        return error.error_400("Missing field in body: 'assignments'")
+
+    created_assignments = list()
     for assignment in assignments:
         newAssignment = models.Assignment(
             roomid=roomId,
@@ -92,42 +109,71 @@ def create_assignments():
             date=assignment["date"],
             completed=False
         )
+        created_assignments.append(newAssignment)
         session.add(newAssignment)
 
+    if len(created_assignments) == 0:
+        return error.error_400("No assignments created")
+
     session.commit()
-    return "Created %s assignment(s)" % len(assignments)
+    return success.success_200({
+        "createdAssignments": list(map(models.Assignment.get_id, created_assignments))
+    })
 
 
 @app.route('/delete_assignment', methods=['POST'])
 def delete_assignment():
     if not request.is_json:
-        return "Expected JSON"
+        return error.error_400("Expected JSON")
 
-    assignmentId = request.json["assignmentId"]
+    try:
+        assignmentId = request.json["assignmentId"]
+    except KeyError:
+        return error.error_400("Missing field in body: 'assignmentId'")
 
     assignment = models.Assignment.query.filter_by(assignmentid=assignmentId).first()
+    if assignment is None:
+        return error.error_400("No assignment found with assignmentId %s" % assignmentId)
 
     o_session = session.object_session(assignment)
     o_session.delete(assignment)
     o_session.commit()
 
-    if( assignment is not None ):
-        return "Assignment with id %s deleted" % assignmentId
-    return "No assignment found with id " + assignmentId
+    return success.success_200({
+        "deletedAssignmentId": assignmentId
+    })
 
 
 @app.route('/register_user', methods=['POST'])
 def register_user():
     if not request.is_json:
-        return "Expected JSON"
+        return error.error_400("Expected JSON")
 
-    userId = request.json["userId"]
-    roomId = request.json["roomId"]
+    try:
+        userId = request.json["userId"]
+    except KeyError:
+        return error.error_400("Missing key in body: 'userId'")
 
-    session.add(models.UserRegistration(userid=userId, roomid=roomId))
+    try:
+        roomId = request.json["roomId"]
+    except KeyError:
+        return error.error_400("Missing key in body: 'roomId'")
+
+    existingRegistration = models.UserRegistration.query.filter_by(userid=userId, roomid=roomId).first()
+    if existingRegistration is not None:
+        return success.success_200({
+            "registration": existingRegistration.json(),
+            "newRegistration": False
+        })
+
+    userRegistration = models.UserRegistration(userid=userId, roomid=roomId)
+    session.add(userRegistration)
     session.commit()
 
-    return "User registered"
+    return success.success_200({
+        "registration": userRegistration.json(),
+        "newRegistration": True
+    })
 
 
 if __name__ == '__main__':
