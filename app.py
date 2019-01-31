@@ -207,12 +207,12 @@ def send_nudge():
 
     if assignment.completed:
         return success.success_200({
-            "push_status": "completed"
+            "pushStatus": "completed"
         })
 
     push.push_client.send_push_nudge(assignment.assigneduser, assignment.roomid, assignment.assignmentname)
     return success.success_200({
-        "push_status": "nudged"
+        "pushStatus": "nudged"
     })
 
 
