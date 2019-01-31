@@ -13,7 +13,7 @@ def send_push_nudge(userId, roomId, assignmentName):
             'fcm': {
                 'notification': {
                     'title': "Nudge",
-                    'body': "Someone nudged you to %s".format(assignmentName)
+                    'body': "Someone nudged you to {}".format(assignmentName)
                 }
             }
         }
