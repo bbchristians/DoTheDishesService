@@ -35,7 +35,7 @@ class Assignment(db.Model):
             "assignedUser": self.assigneduser,
             "createdUser": self.createduser,
             "assignmentName": self.assignmentname,
-            "date": self.date,
+            "date": self.date.strftime("%d/%m/%Y"),
             "completed": self.completed,
             "roomId": self.roomid
         }

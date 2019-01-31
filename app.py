@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 import error
 import success
-import json
+import push.push_client
 
 app = Flask(__name__)
+app.debug = False
 db = SQLAlchemy()
 
 import models
@@ -16,7 +17,7 @@ import models
 #     'host': 'localhost',
 #     'port': '5432',
 # }
-# 
+#
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\
 # %(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
 
@@ -48,7 +49,7 @@ def create_room():
     })
 
 
-@app.route('/get_room', methods=['GET'])
+@app.route('/get_room', methods=['POST'])
 def get_room():
     if not request.is_json:
         return error.error_400("Expected JSON")
@@ -101,12 +102,28 @@ def create_assignments():
 
     created_assignments = list()
     for assignment in assignments:
+
+        try:
+            assignedUser = assignment["assignedUser"]
+        except KeyError:
+            return error.error_400("Missing field in assignment body: 'assignedUser'")
+
+        try:
+            assignmentName = assignment["name"]
+        except KeyError:
+            return error.error_400("Missing field in assignment body: 'name'")
+
+        try:
+            assignmentDate = assignment["date"]
+        except KeyError:
+            return error.error_400("Missing field in assignment body: 'date'")
+
         newAssignment = models.Assignment(
             roomid=roomId,
             createduser=createdUser,
-            assigneduser=assignment["assignedUser"],
-            assignmentname=assignment["name"],
-            date=assignment["date"],
+            assigneduser=assignedUser,
+            assignmentname=assignmentName,
+            date=assignmentDate,
             completed=False
         )
         created_assignments.append(newAssignment)
@@ -173,6 +190,29 @@ def register_user():
     return success.success_200({
         "registration": userRegistration.json(),
         "newRegistration": True
+    })
+
+
+@app.route('/nudge', methods=['POST'])
+def send_nudge():
+    if not request.is_json:
+        return error.error_400("Expected JSON")
+
+    try:
+        assignmentId = request.json["assignmentId"]
+    except KeyError:
+        return error.error_400("Missing key in body: 'assignmentId'")
+
+    assignment = models.Assignment.query.filter_by(assignmentid=assignmentId).first()
+
+    if assignment.completed:
+        return success.success_200({
+            "push_status": "completed"
+        })
+
+    push.push_client.send_push_nudge(assignment.assigneduser, assignment.roomid, assignment.assignmentname)
+    return success.success_200({
+        "push_status": "nudged"
     })
 
 
